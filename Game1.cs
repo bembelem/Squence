@@ -2,29 +2,16 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Squence.Core.Managers;
-using Squence.Core.Services;
-using Squence.Core.States;
-using Squence.Core.UI;
 using Squence.Data;
 
 namespace Squence
 {
     public class Game1 : Game
     {
-        private readonly GameState _gameState = new();
-        private readonly TileMapDefinition _tileMapDefinition = LevelMap.GetTileMapDefinition();
 
         private readonly GraphicsDeviceManager _graphics;
-
         private SpriteBatch _spriteBatch;
-        private UIManager _uiManager;
-        private EntityManager _entityManager;
-        private TileMapManager _tileMapManager;
-
-        private WaveManager _waveManager;
-        private CollisionManager _collisionManager;
-        private DrawingManager _drawingManager;
-        private InputManager _inputManager;
+        private GameManager _gameManager;
 
         public Game1()
         {
@@ -32,8 +19,9 @@ namespace Squence
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _graphics.PreferredBackBufferWidth = _tileMapDefinition.Width * _tileMapDefinition.TileSize;
-            _graphics.PreferredBackBufferHeight = _tileMapDefinition.Height * _tileMapDefinition.TileSize;
+            var tileMapDefinition = LevelMap.GetTileMapDefinition();
+            _graphics.PreferredBackBufferWidth = tileMapDefinition.Width * tileMapDefinition.TileSize;
+            _graphics.PreferredBackBufferHeight = tileMapDefinition.Height * tileMapDefinition.TileSize;
             _graphics.ApplyChanges();
         }
 
@@ -41,14 +29,7 @@ namespace Squence
         {
             // TODO: Add your initialization logic here
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _uiManager = new UIManager(_gameState, GraphicsDevice);
-            _entityManager = new EntityManager(_gameState, GraphicsDevice);
-            _tileMapManager = new TileMapManager(_tileMapDefinition);
-
-            _waveManager = new WaveManager(_entityManager, _tileMapDefinition.WavesList, _tileMapDefinition.TileSize);
-            _collisionManager = new CollisionManager(_entityManager, _tileMapManager, _gameState);
-            _drawingManager = new DrawingManager(_spriteBatch, new TextureStore(GraphicsDevice));
-            _inputManager = new InputManager(_entityManager, new BuildingManager(_tileMapManager, _uiManager));
+            _gameManager = new GameManager(GraphicsDevice, _spriteBatch);
 
             base.Initialize();
         }
@@ -61,15 +42,11 @@ namespace Squence
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
-                || Keyboard.GetState().IsKeyDown(Keys.Escape)
-                || _gameState.HealthPoints <= 0)
+                || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             // TODO: Add your update logic here
-            _inputManager.Update(gameTime);
-            _entityManager.Update(gameTime);
-            _waveManager.Update(gameTime);
-            _collisionManager.Update();
+            _gameManager.Update(gameTime, GraphicsDevice, _spriteBatch);
 
             base.Update(gameTime);
         }
@@ -81,9 +58,7 @@ namespace Squence
             // TODO: Add your drawing code here
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            _tileMapManager.Draw(_drawingManager);
-            _entityManager.Draw(_drawingManager);
-            _uiManager.Draw(_drawingManager);
+            _gameManager.Draw();
 
             _spriteBatch.End();
 

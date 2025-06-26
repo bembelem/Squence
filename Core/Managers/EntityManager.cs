@@ -46,17 +46,19 @@ namespace Squence.Core.Managers
             {
                 if (enemy.HealthPoints <= 0)
                 {
+                    _gameState.HandleKillEnemy();
                     RemoveEnemy(enemy.Guid);
                     ScatterCoins(enemy);
                 }
-                else if (enemy.IsReachGoal) {
+                else if (enemy.IsReachGoal)
+                {
                     RemoveEnemy(enemy.Guid);
                     _gameState.HandleEnemyBreakthrough();
                 }
                 else
                 {
                     enemy.Update(gameTime);
-                } 
+                }
             }
         }
 

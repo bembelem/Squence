@@ -7,9 +7,9 @@ using Squence.Entities;
 
 namespace Squence.Core.UI
 {
-    internal class UIManager(GameState gameState, GraphicsDevice graphicsDevice): IDrawable
+    internal class UIManager(GameState gameState, GraphicsDevice graphicsDevice) : IDrawable
     {
-        private readonly HUDPanel _hudPanel = new(gameState);
+        private readonly HUDPanel _hudPanel = new(gameState, graphicsDevice);
         private readonly BuildingPanel _buildingPanel = new(gameState, graphicsDevice);
 
         public void Draw(DrawingManager drawingManager)
@@ -17,7 +17,7 @@ namespace Squence.Core.UI
             _hudPanel.Draw(drawingManager);
             _buildingPanel.Draw(drawingManager);
         }
-        
+
         public void ShowBuildingPanelForTile(TileBuildZone tile)
         {
             _buildingPanel.ShowForTile(tile);
@@ -31,6 +31,11 @@ namespace Squence.Core.UI
         public bool TryHandleClick(MouseState mouseState)
         {
             return _buildingPanel.TryHandleClick(mouseState);
+        }
+
+        public void TryHandleRestartClick(MouseState mouseState)
+        {
+            _hudPanel.TryHandleRestartClick(mouseState);
         }
     }
 }

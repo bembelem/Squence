@@ -40,10 +40,10 @@ namespace Squence.Core.States
             {
                 if (gameState.MoneyCount >= LevelUpCost && LevelBuilding <= 2)
                 {
+                    gameState.HandleBuildZone(LevelUpCost);
                     LevelBuilding++;
-                    gameState.BuildZone(LevelUpCost);
                     TileBuildZone.BuildZone(BulletType, LevelBuilding);
-                    
+
 
                 }
             }
@@ -54,7 +54,7 @@ namespace Squence.Core.States
                 TileBuildZone.DestroyZone();
             }
         }
-        
+
         private static int GetLevelUpCost(int levelBuilding)
         {
             return levelBuilding switch

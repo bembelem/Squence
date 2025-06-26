@@ -20,11 +20,11 @@ namespace Squence.Core.Managers
                 DrawRenderableEntity(renderableEntity);
             }
         }
-        
+
         public void DrawRenderableEntity(IRenderable entity)
         {
             var texture = _textureStore.Get(entity.TextureName);
-            var textureOrigin = entity is Bullet ? 
+            var textureOrigin = entity is Bullet ?
                 new Vector2(texture.Width / 2f, texture.Height / 2f) :
                 Vector2.Zero;
             var textureScale = entity.TextureWidth / (float)_textureStore.Get(entity.TextureName).Width;
@@ -41,7 +41,7 @@ namespace Squence.Core.Managers
                 layerDepth: 0f
             );
         }
-        
+
         public void DrawIconWithValue(Vector2 iconPosition, int iconSize, int paddingX, string iconName, string value, BitmapFontType bitmapFontType)
         {
             var font = GetBitmapFont(bitmapFontType);
@@ -83,7 +83,7 @@ namespace Squence.Core.Managers
             }
         }
 
-        private BitmapFont GetBitmapFont(BitmapFontType bitmapFontType)
+        public BitmapFont GetBitmapFont(BitmapFontType bitmapFontType)
         {
             return bitmapFontType switch
             {
@@ -91,6 +91,23 @@ namespace Squence.Core.Managers
                 BitmapFontType.BuildingPanel => _textureStore.BuildingPanelBitmapFont,
                 _ => _textureStore.HUDPanelBitmapFont
             };
+        }
+
+        public void DrawDarkOverlay(GraphicsDevice graphicsDevice)
+        {
+            Texture2D blackTexture = new(graphicsDevice, 1, 1);
+            blackTexture.SetData([Color.Black]);
+
+            spriteBatch.Draw(
+                texture: blackTexture,
+                destinationRectangle: new Rectangle(
+                    0,
+                    0,
+                    graphicsDevice.PresentationParameters.BackBufferWidth,
+                    graphicsDevice.PresentationParameters.BackBufferHeight
+                    ),
+                color: Color.Black * 0.75f // прозрачность от 0 до 1
+            );
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Squence.Core.Interfaces;
+using Squence.Core.UI;
 using Squence.Entities;
 
 namespace Squence.Core.Managers
 {
     // создаём новые сущности и обновляем параметры существующих
-    internal class InputManager(EntityManager entityManager, BuildingManager buildingManager): IUpdatable
+    internal class InputManager(EntityManager entityManager, BuildingManager buildingManager) : IUpdatable
     {
         private readonly EntityManager _entityManager = entityManager;
         private readonly BuildingManager _buildingManager = buildingManager;
@@ -34,11 +35,11 @@ namespace Squence.Core.Managers
             var direction = Vector2.Zero;
             var directionType = DirectionType.Down;
 
-            if (keyboardState.IsKeyDown(Keys.W)) 
+            if (keyboardState.IsKeyDown(Keys.W))
             {
                 direction.Y -= 1;
                 directionType = DirectionType.Up;
-            } 
+            }
             if (keyboardState.IsKeyDown(Keys.S))
             {
                 direction.Y += 1;
@@ -85,7 +86,7 @@ namespace Squence.Core.Managers
         private void UpdateBuilding(MouseState mouseState)
         {
             if (mouseState.LeftButton == ButtonState.Pressed && !_isMouseLeftBuildingPressed)
-            {   
+            {
                 if (!_buildingManager.TryHandleUIClick(mouseState))
                 {
                     _buildingManager.TryHandleTileClick(mouseState);
@@ -96,6 +97,15 @@ namespace Squence.Core.Managers
             if (mouseState.LeftButton == ButtonState.Released)
             {
                 _isMouseLeftBuildingPressed = false;
+            }
+        }
+
+        public void UpdateGameOver(UIManager uiManager)
+        {
+            var mouseState = Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                uiManager.TryHandleRestartClick(mouseState);
             }
         }
     }
